@@ -1,0 +1,287 @@
+Terminais sem uso na gramática
+
+    ABRE_PARENTESES
+    FECHA_PARENTESES
+
+
+Gramática
+
+    0 $accept: geral $end
+
+    1 geral: expr
+    2      | disj
+
+    3 expr: expr MAIS termo
+    4     | expr MENOS termo
+    5     | termo
+
+    6 termo: termo ASTERISCO fator
+    7      | termo DIV fator
+    8      | fator
+
+    9 fator: IDENT_INT
+
+   10 disj: disj OR conj
+   11     | conj
+
+   12 conj: conj AND lit
+   13     | lit
+
+   14 lit: IDENT_BOOL
+
+
+Terminais, com as regras onde eles aparecem
+
+    $end (0) 0
+    error (256)
+    IDENT_INT (258) 9
+    IDENT_BOOL (259) 14
+    MAIS (260) 3
+    MENOS (261) 4
+    OR (262) 10
+    AND (263) 12
+    ASTERISCO (264) 6
+    DIV (265) 7
+    ABRE_PARENTESES (266)
+    FECHA_PARENTESES (267)
+
+
+Não terminais com as regras onde eles aparecem
+
+    $accept (13)
+        à esquerda: 0
+    geral (14)
+        à esquerda: 1 2
+        à direita: 0
+    expr (15)
+        à esquerda: 3 4 5
+        à direita: 1 3 4
+    termo (16)
+        à esquerda: 6 7 8
+        à direita: 3 4 5 6 7
+    fator (17)
+        à esquerda: 9
+        à direita: 6 7 8
+    disj (18)
+        à esquerda: 10 11
+        à direita: 2 10
+    conj (19)
+        à esquerda: 12 13
+        à direita: 10 11 12
+    lit (20)
+        à esquerda: 14
+        à direita: 12 13
+
+
+Estado 0
+
+    0 $accept: • geral $end
+
+    IDENT_INT   deslocar, e ir ao estado 1
+    IDENT_BOOL  deslocar, e ir ao estado 2
+
+    geral  ir ao estado 3
+    expr   ir ao estado 4
+    termo  ir ao estado 5
+    fator  ir ao estado 6
+    disj   ir ao estado 7
+    conj   ir ao estado 8
+    lit    ir ao estado 9
+
+
+Estado 1
+
+    9 fator: IDENT_INT •
+
+    $padrão  reduzir usando a regra 9 (fator)
+
+
+Estado 2
+
+   14 lit: IDENT_BOOL •
+
+    $padrão  reduzir usando a regra 14 (lit)
+
+
+Estado 3
+
+    0 $accept: geral • $end
+
+    $end  deslocar, e ir ao estado 10
+
+
+Estado 4
+
+    1 geral: expr •
+    3 expr: expr • MAIS termo
+    4     | expr • MENOS termo
+
+    MAIS   deslocar, e ir ao estado 11
+    MENOS  deslocar, e ir ao estado 12
+
+    $padrão  reduzir usando a regra 1 (geral)
+
+
+Estado 5
+
+    5 expr: termo •
+    6 termo: termo • ASTERISCO fator
+    7      | termo • DIV fator
+
+    ASTERISCO  deslocar, e ir ao estado 13
+    DIV        deslocar, e ir ao estado 14
+
+    $padrão  reduzir usando a regra 5 (expr)
+
+
+Estado 6
+
+    8 termo: fator •
+
+    $padrão  reduzir usando a regra 8 (termo)
+
+
+Estado 7
+
+    2 geral: disj •
+   10 disj: disj • OR conj
+
+    OR  deslocar, e ir ao estado 15
+
+    $padrão  reduzir usando a regra 2 (geral)
+
+
+Estado 8
+
+   11 disj: conj •
+   12 conj: conj • AND lit
+
+    AND  deslocar, e ir ao estado 16
+
+    $padrão  reduzir usando a regra 11 (disj)
+
+
+Estado 9
+
+   13 conj: lit •
+
+    $padrão  reduzir usando a regra 13 (conj)
+
+
+Estado 10
+
+    0 $accept: geral $end •
+
+    $padrão  aceitar
+
+
+Estado 11
+
+    3 expr: expr MAIS • termo
+
+    IDENT_INT  deslocar, e ir ao estado 1
+
+    termo  ir ao estado 17
+    fator  ir ao estado 6
+
+
+Estado 12
+
+    4 expr: expr MENOS • termo
+
+    IDENT_INT  deslocar, e ir ao estado 1
+
+    termo  ir ao estado 18
+    fator  ir ao estado 6
+
+
+Estado 13
+
+    6 termo: termo ASTERISCO • fator
+
+    IDENT_INT  deslocar, e ir ao estado 1
+
+    fator  ir ao estado 19
+
+
+Estado 14
+
+    7 termo: termo DIV • fator
+
+    IDENT_INT  deslocar, e ir ao estado 1
+
+    fator  ir ao estado 20
+
+
+Estado 15
+
+   10 disj: disj OR • conj
+
+    IDENT_BOOL  deslocar, e ir ao estado 2
+
+    conj  ir ao estado 21
+    lit   ir ao estado 9
+
+
+Estado 16
+
+   12 conj: conj AND • lit
+
+    IDENT_BOOL  deslocar, e ir ao estado 2
+
+    lit  ir ao estado 22
+
+
+Estado 17
+
+    3 expr: expr MAIS termo •
+    6 termo: termo • ASTERISCO fator
+    7      | termo • DIV fator
+
+    ASTERISCO  deslocar, e ir ao estado 13
+    DIV        deslocar, e ir ao estado 14
+
+    $padrão  reduzir usando a regra 3 (expr)
+
+
+Estado 18
+
+    4 expr: expr MENOS termo •
+    6 termo: termo • ASTERISCO fator
+    7      | termo • DIV fator
+
+    ASTERISCO  deslocar, e ir ao estado 13
+    DIV        deslocar, e ir ao estado 14
+
+    $padrão  reduzir usando a regra 4 (expr)
+
+
+Estado 19
+
+    6 termo: termo ASTERISCO fator •
+
+    $padrão  reduzir usando a regra 6 (termo)
+
+
+Estado 20
+
+    7 termo: termo DIV fator •
+
+    $padrão  reduzir usando a regra 7 (termo)
+
+
+Estado 21
+
+   10 disj: disj OR conj •
+   12 conj: conj • AND lit
+
+    AND  deslocar, e ir ao estado 16
+
+    $padrão  reduzir usando a regra 10 (disj)
+
+
+Estado 22
+
+   12 conj: conj AND lit •
+
+    $padrão  reduzir usando a regra 12 (conj)
