@@ -3,10 +3,15 @@
 
 #define ALLOC_STEP 1024
 
-typedef struct variavel_simples_av_s {
+#define CAT_INDEFINIDA 0
+#define VARIAVEL_SIMPLES 1
+#define PARAMETRO_FORMAL 2
+#define PROCEDIMENTO 3
+
+typedef struct var_simples_av_s {
 	unsigned short int tipo;
 	unsigned int deslocamento;
-} variavel_simples_av_t;
+} var_simples_av_t;
 
 typedef struct simbolo_s {
 	char *identificador;
@@ -21,12 +26,18 @@ typedef struct tab_simbolos_s {
 	unsigned int alloc_tam;
 } tab_simbolos_t;
 
-void tab_simbolos_init (tab_simbolos_t *tab);
-void tab_simbolos_destroy (tab_simbolos_t *tab);
+
+void *nova_var_simples(unsigned short int tipo, unsigned int deslocamento);
+void destroi_var_simples(void *var_simples);
+
+void atribui_simbolo (simbolo_t *simb, char *ident, unsigned short int cat, unsigned short int niv, void *av);
+
+void tab_simbolos_inic (tab_simbolos_t *tab);
+void tab_simbolos_destroi (tab_simbolos_t *tab);
 
 void tab_simbolos_insere (tab_simbolos_t *tab, simbolo_t *simb);
 
-void tab_simbolos_busca (tab_simbolos_t *tab, char *ident);
+int tab_simbolos_busca (tab_simbolos_t *tab, char *ident);
 
 void tab_simbolos_elimina (tab_simbolos_t *tab, unsigned int n);
 
