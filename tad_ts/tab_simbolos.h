@@ -50,10 +50,10 @@ void destroi_var_simples(void *var_simples);
 void *novo_parametro_formal(unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem);
 void destroi_parametro_formal(void *parametro_formal);
 
-void *novo_procedimento(char *rotulo, unsigned short int num_params, simbolo_t *params);
+void *novo_procedimento(const char *rotulo, unsigned short int num_params);
 void destroi_procedimento(void *procedimento);
 
-void atribui_simbolo (simbolo_t *simb, char *ident, unsigned short int cat, unsigned short int niv, void *av);
+void atribui_simbolo (simbolo_t *simb, const char *ident, unsigned short int cat, unsigned short int niv, void *av);
 simbolo_t *tab_simbolos_topo(tab_simbolos_t *tab);
 
 void tab_simbolos_inic (tab_simbolos_t *tab);

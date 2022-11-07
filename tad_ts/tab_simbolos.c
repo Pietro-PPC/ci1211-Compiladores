@@ -35,13 +35,12 @@ void destroi_parametro_formal(void *parametro_formal){
 		free(parametro_formal);
 }
 
-void *novo_procedimento(char *rotulo, unsigned short int num_params, simbolo_t *params){
+void *novo_procedimento(const char *rotulo, unsigned short int num_params){
 	procedimento_av_t *ret;
 	ret = malloc( sizeof(procedimento_av_t) ); 
 
-	ret->rotulo = rotulo;
+	ret->rotulo = malloc( strlen(rotulo)+1 ); strcpy(ret->rotulo, rotulo);
 	ret->num_params = num_params;
-	ret->params = params;
 
 	return (void *) ret;
 }
@@ -60,15 +59,12 @@ void destroi_procedimento(void *procedimento){
 	Passar ponteiro já alocado para atributos variáveis da categoria 
 	A variável de categoria informa qual o tipo do atributo variável
 */
-void atribui_simbolo (simbolo_t *simb, char *ident, unsigned short int cat, unsigned short int niv, void *av){
-	simb->identificador = ident;
+void atribui_simbolo (simbolo_t *simb, const char *ident, unsigned short int cat, unsigned short int niv, void *av){
+
+	simb->identificador = malloc( strlen(ident)+1 ); strcpy(simb->identificador, ident);
 	simb->categoria = cat;
 	simb->nivel = niv;
 	simb->atributos_var = av;
-}
-
-simbolo_t *tab_simbolos_topo(tab_simbolos_t *tab){
-	return tab->pilha + tab->tam - 1;
 }
 
 void tab_simbolos_inic (tab_simbolos_t *tab){
@@ -99,10 +95,23 @@ void tab_simbolos_destroi (tab_simbolos_t *tab){
 	tab->alloc_tam = 0;
 }
 
+// Faz procedimento apontar para posição acima na pilha caso tenha parametros
+void atribuir_inicio_params(simbolo_t *simb){
+	procedimento_av_t *av = (procedimento_av_t *) simb->atributos_var;
+
+	if (av->num_params)
+		av->params = simb+1; // Posição na pilha logo após
+	else 
+		av->params = NULL;
+}
+
 void tab_simbolos_insere (tab_simbolos_t *tab, simbolo_t *simb){
 	if (tab->alloc_tam == tab->tam)
 		tab->pilha = realloc(tab->pilha, (tab->alloc_tam + ALLOC_STEP) * sizeof(simbolo_t));
 	
+	if (simb->categoria == PROCEDIMENTO)
+		atribuir_inicio_params(simb);
+
 	memcpy(&(tab->pilha[tab->tam]), simb, sizeof(simbolo_t));
 	tab->tam++;
 }
