@@ -8,10 +8,25 @@
 #define PARAMETRO_FORMAL 2
 #define PROCEDIMENTO 3
 
+#define PASSAGEM_VALOR 1
+#define PASSAGEM_REFERENCIA 2
+
 typedef struct var_simples_av_s {
 	unsigned short int tipo;
 	unsigned int deslocamento;
 } var_simples_av_t;
+
+typedef struct parametro_formal_av_s {
+	unsigned short int tipo;
+	unsigned int deslocamento;
+	unsigned short int passagem;
+} parametro_formal_av_t;
+
+typedef struct procedimento_av_s {
+	char *rotulo;
+	unsigned short int num_params;
+	parametro_formal_av_t *params;
+} procedimento_av_t;
 
 typedef struct simbolo_s {
 	char *identificador;
@@ -29,6 +44,12 @@ typedef struct tab_simbolos_s {
 
 void *nova_var_simples(unsigned short int tipo, unsigned int deslocamento);
 void destroi_var_simples(void *var_simples);
+
+void *novo_parametro_formal(unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem);
+void destroi_parametro_formal(void *parametro_formal);
+
+void *novo_procedimento(char *rotulo, unsigned short int num_params, parametro_formal_av_t *params);
+void destroi_procedimento(void *procedimento);
 
 void atribui_simbolo (simbolo_t *simb, char *ident, unsigned short int cat, unsigned short int niv, void *av);
 

@@ -19,6 +19,52 @@ void destroi_var_simples(void *var_simples){
 		free(var_simples);
 }
 
+// TALVEZ NÃO PRECISE //
+void *novo_parametro_formal(unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem){
+	parametro_formal_av_t *ret;
+	ret = malloc( sizeof(parametro_formal_av_t) );
+
+	ret->tipo = tipo;
+	ret->deslocamento = deslocamento;
+	ret->passagem = passagem;
+
+	return (void *) ret;
+}
+
+void destroi_parametro_formal(void *parametro_formal){
+	if (parametro_formal)
+		free(parametro_formal);
+}
+// FIM TALVEZ NÃO PRECISE //
+
+
+void atribui_parametro_formal(parametro_formal_av_t *param, unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem){
+	param->tipo = tipo;
+	param->deslocamento = deslocamento;
+	param->passagem = passagem;
+}
+
+void *novo_procedimento(char *rotulo, unsigned short int num_params, parametro_formal_av_t *params){
+	procedimento_av_t *ret;
+	ret = malloc( sizeof(procedimento_av_t) );
+
+	ret->rotulo = rotulo;
+	ret->num_params = num_params;
+	ret->params = params;
+
+	return (void *) ret;
+}
+
+void destroi_procedimento(void *procedimento){
+	procedimento_av_t *proc = (procedimento_av_t *) procedimento;
+	if (proc){
+		if (proc->rotulo) free(proc->rotulo);
+		if (proc->params) free(proc->params);
+		free(proc);
+	}
+}
+
+
 /* 
 	Passar ponteiro já alocado para atributos variáveis da categoria 
 	A variável de categoria informa qual o tipo do atributo variável
