@@ -11,6 +11,15 @@
 #define PASSAGEM_VALOR 1
 #define PASSAGEM_REFERENCIA 2
 
+#define TIPO_INT 1
+
+typedef struct simbolo_s {
+	char *identificador;
+	unsigned short int categoria;
+	unsigned short int nivel;
+	void *atributos_var;
+} simbolo_t;
+
 typedef struct var_simples_av_s {
 	unsigned short int tipo;
 	unsigned int deslocamento;
@@ -25,15 +34,8 @@ typedef struct parametro_formal_av_s {
 typedef struct procedimento_av_s {
 	char *rotulo;
 	unsigned short int num_params;
-	parametro_formal_av_t *params;
+	simbolo_t *params;
 } procedimento_av_t;
-
-typedef struct simbolo_s {
-	char *identificador;
-	unsigned short int categoria;
-	unsigned short int nivel;
-	void *atributos_var;
-} simbolo_t;
 
 typedef struct tab_simbolos_s {
 	simbolo_t *pilha;
@@ -48,10 +50,11 @@ void destroi_var_simples(void *var_simples);
 void *novo_parametro_formal(unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem);
 void destroi_parametro_formal(void *parametro_formal);
 
-void *novo_procedimento(char *rotulo, unsigned short int num_params, parametro_formal_av_t *params);
+void *novo_procedimento(char *rotulo, unsigned short int num_params, simbolo_t *params);
 void destroi_procedimento(void *procedimento);
 
 void atribui_simbolo (simbolo_t *simb, char *ident, unsigned short int cat, unsigned short int niv, void *av);
+simbolo_t *tab_simbolos_topo(tab_simbolos_t *tab);
 
 void tab_simbolos_inic (tab_simbolos_t *tab);
 void tab_simbolos_destroi (tab_simbolos_t *tab);

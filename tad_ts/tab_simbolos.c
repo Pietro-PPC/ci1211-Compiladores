@@ -19,7 +19,6 @@ void destroi_var_simples(void *var_simples){
 		free(var_simples);
 }
 
-// TALVEZ NÃO PRECISE //
 void *novo_parametro_formal(unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem){
 	parametro_formal_av_t *ret;
 	ret = malloc( sizeof(parametro_formal_av_t) );
@@ -35,18 +34,10 @@ void destroi_parametro_formal(void *parametro_formal){
 	if (parametro_formal)
 		free(parametro_formal);
 }
-// FIM TALVEZ NÃO PRECISE //
 
-
-void atribui_parametro_formal(parametro_formal_av_t *param, unsigned short int tipo, unsigned int deslocamento, unsigned short int passagem){
-	param->tipo = tipo;
-	param->deslocamento = deslocamento;
-	param->passagem = passagem;
-}
-
-void *novo_procedimento(char *rotulo, unsigned short int num_params, parametro_formal_av_t *params){
+void *novo_procedimento(char *rotulo, unsigned short int num_params, simbolo_t *params){
 	procedimento_av_t *ret;
-	ret = malloc( sizeof(procedimento_av_t) );
+	ret = malloc( sizeof(procedimento_av_t) ); 
 
 	ret->rotulo = rotulo;
 	ret->num_params = num_params;
@@ -59,7 +50,7 @@ void destroi_procedimento(void *procedimento){
 	procedimento_av_t *proc = (procedimento_av_t *) procedimento;
 	if (proc){
 		if (proc->rotulo) free(proc->rotulo);
-		if (proc->params) free(proc->params);
+		proc->params = NULL;
 		free(proc);
 	}
 }
@@ -76,39 +67,14 @@ void atribui_simbolo (simbolo_t *simb, char *ident, unsigned short int cat, unsi
 	simb->atributos_var = av;
 }
 
+simbolo_t *tab_simbolos_topo(tab_simbolos_t *tab){
+	return tab->pilha + tab->tam - 1;
+}
+
 void tab_simbolos_inic (tab_simbolos_t *tab){
 	tab->pilha = NULL;
 	tab->tam = 0;
 	tab->alloc_tam = 0;
-}
-
-/* 
-	TODO: Ainda tem que ver alocação dinâmica nos atributos variáveis
-*/
-void tab_simbolos_destroi (tab_simbolos_t *tab){
-	for (unsigned int i = 0; i < tab->tam; ++i){
-		if (tab->pilha[i].identificador) free(tab->pilha[i].identificador);
-		if (tab->pilha[i].atributos_var) free(tab->pilha[i].atributos_var); // Não funciona pra procedimentos.
-	}
-	free(tab->pilha);
-}
-
-void tab_simbolos_insere (tab_simbolos_t *tab, simbolo_t *simb){
-	if (tab->alloc_tam == tab->tam)
-		tab->pilha = realloc(tab->pilha, (tab->alloc_tam + ALLOC_STEP) * sizeof(simbolo_t));
-	
-	memcpy(&tab->pilha[tab->tam], simb, sizeof(simbolo_t));
-	tab->tam++;
-}
-
-/* Se tabela não tem o símbolo, retorna -1 */
-int tab_simbolos_busca (tab_simbolos_t *tab, char *ident){
-	int it = tab->tam-1;
-	while (it >= 0){
-		if (!strcmp(tab->pilha[it].identificador, ident)) return it;
-		it--;
-	}
-	return it;
 }
 
 void simbolo_destroi_atributos(simbolo_t *simb) {
@@ -116,15 +82,44 @@ void simbolo_destroi_atributos(simbolo_t *simb) {
 	if (simb->atributos_var){
 		if (simb->categoria == VARIAVEL_SIMPLES)
 			destroi_var_simples(simb->atributos_var);
-		// Falta teste de parametro formal e procedimento
+		else if (simb->categoria == PARAMETRO_FORMAL)
+			destroi_parametro_formal(simb->atributos_var);
+		else 
+			destroi_procedimento(simb->atributos_var);
+		
 	}
 }
 
+void tab_simbolos_destroi (tab_simbolos_t *tab){
+	for (unsigned int i = 0; i < tab->tam; ++i)
+		simbolo_destroi_atributos( &(tab->pilha[i]) );
+
+	free(tab->pilha);
+	tab->tam = 0;
+	tab->alloc_tam = 0;
+}
+
+void tab_simbolos_insere (tab_simbolos_t *tab, simbolo_t *simb){
+	if (tab->alloc_tam == tab->tam)
+		tab->pilha = realloc(tab->pilha, (tab->alloc_tam + ALLOC_STEP) * sizeof(simbolo_t));
+	
+	memcpy(&(tab->pilha[tab->tam]), simb, sizeof(simbolo_t));
+	tab->tam++;
+}
+
+/* Se tabela não tem o símbolo, retorna -1 */
+int tab_simbolos_busca (tab_simbolos_t *tab, char *ident){ 
+	int it = tab->tam-1;
+	while (it >= 0){
+		if (!strcmp(tab->pilha[it].identificador, ident)) return it; // falta testar o nivel
+		it--;
+	}
+	return it;
+}
+
 /* 
-	Talvez mudar para uma alocação de passo binário depois (provavelmente sem tempo irmão) 
 	Tem memory leak :/
 */
-
 void tab_simbolos_elimina (tab_simbolos_t *tab, unsigned int n){
 	if (n > tab->tam) {
 		fprintf(stderr, "Tentaste remover elementos demais da tabela!\n");
@@ -133,7 +128,8 @@ void tab_simbolos_elimina (tab_simbolos_t *tab, unsigned int n){
 
 	// Desempilha e libera elemento por elemento
 	while (n){
-		simbolo_destroi_atributos( &tab->pilha[--tab->tam] );		
+		tab->tam--;
+		simbolo_destroi_atributos( &(tab->pilha[tab->tam]) );
 		n--;
 	}
 
