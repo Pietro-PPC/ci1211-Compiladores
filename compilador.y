@@ -15,6 +15,8 @@ int num_vars;
 simbolo_t s;
 tab_simbolos_t tab;
 int nivel = 0;
+char buffer[100];
+int num_vars;
 
 %}
 
@@ -53,7 +55,10 @@ parte_declara_vars:  var
 ;
 
 
-var         : { } VAR declara_vars
+var         : { num_vars = 0; } VAR declara_vars {
+               sprintf(buffer, "AMEM %d", num_vars);
+               geraCodigo(NULL, buffer);
+             }
             |
 ;
 
@@ -64,22 +69,20 @@ declara_vars: declara_vars declara_var
 declara_var : { }
               lista_id_var DOIS_PONTOS
               tipo
-              { /* AMEM */
+              {
               }
               PONTO_E_VIRGULA
 ;
-
-var a:integer;
-   b:integer;
 
 tipo        : IDENT
 ;
 
 lista_id_var: lista_id_var VIRGULA IDENT {
-   atribui_simbolo (&simb, IDENT, "integer", nivel, );
-   tab_simbolos_insere (&tab, &simb);
+   /*atribui_simbolo (&simb, IDENT, "integer", nivel, );
+   tab_simbolos_insere (&tab, &simb);*/
+   num_vars++;
 }
-            | IDENT { /* insere vars na tabela de s�mbolos */}
+            | IDENT { num_vars++; /* insere vars na tabela de s�mbolos */ }
 ;
 
 lista_idents: lista_idents VIRGULA IDENT
@@ -115,12 +118,12 @@ int main (int argc, char** argv) {
  *  Inicia a Tabela de S�mbolos
  * ------------------------------------------------------------------- */
 
-   tab_simbolos_inic (&tab);
+//   tab_simbolos_inic (&tab);
 
    yyin=fp;
    yyparse();
 
-   tab_simbolos_destroi(&tab);
+//   tab_simbolos_destroi(&tab);
 
    return 0;
 }
