@@ -9,8 +9,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include "compilador.h"
+#include "tab_simbolos.h"
 
 int num_vars;
+simbolo_t s;
+tab_simbolos_t tab;
+int nivel = 0;
 
 %}
 
@@ -65,11 +69,16 @@ declara_var : { }
               PONTO_E_VIRGULA
 ;
 
+var a:integer;
+   b:integer;
+
 tipo        : IDENT
 ;
 
-lista_id_var: lista_id_var VIRGULA IDENT
-              { /* insere �ltima vars na tabela de s�mbolos */ }
+lista_id_var: lista_id_var VIRGULA IDENT {
+   atribui_simbolo (&simb, IDENT, "integer", nivel, );
+   tab_simbolos_insere (&tab, &simb);
+}
             | IDENT { /* insere vars na tabela de s�mbolos */}
 ;
 
@@ -106,8 +115,12 @@ int main (int argc, char** argv) {
  *  Inicia a Tabela de S�mbolos
  * ------------------------------------------------------------------- */
 
+   tab_simbolos_inic (&tab);
+
    yyin=fp;
    yyparse();
+
+   tab_simbolos_destroi(&tab);
 
    return 0;
 }

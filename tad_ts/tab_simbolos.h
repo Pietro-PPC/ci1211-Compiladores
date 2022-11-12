@@ -58,11 +58,8 @@ simbolo_t *tab_simbolos_topo(tab_simbolos_t *tab);
 
 void tab_simbolos_inic (tab_simbolos_t *tab);
 void tab_simbolos_destroi (tab_simbolos_t *tab);
-
 void tab_simbolos_insere (tab_simbolos_t *tab, simbolo_t *simb);
-
 int tab_simbolos_busca (tab_simbolos_t *tab, char *ident);
-
 void tab_simbolos_elimina (tab_simbolos_t *tab, unsigned int n);
 
 
