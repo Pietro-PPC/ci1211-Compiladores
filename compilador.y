@@ -78,8 +78,7 @@ tipo        : IDENT
 ;
 
 lista_id_var: lista_id_var VIRGULA IDENT {
-   /*atribui_simbolo (&simb, IDENT, "integer", nivel, );
-   tab_simbolos_insere (&tab, &simb);*/
+   /* insere �ltima vars na tabela de s�mbolos */
    num_vars++;
 }
             | IDENT { num_vars++; /* insere vars na tabela de s�mbolos */ }
